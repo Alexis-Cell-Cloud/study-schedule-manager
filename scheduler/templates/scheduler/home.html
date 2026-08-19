@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Schedule Manager</title>
+</head>
+<body>
+
+    <h1>Study Schedule Manager</h1>
+
+    <p>
+        Logged in as {{ user.username }} |
+        <a href="{% url 'logout' %}">Logout</a>
+    </p>
+
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <p><a href="{% url 'schedule_create' %}">+ Add Study Session</a></p>
+
+    {% if schedules %}
+        <table border="1" cellpadding="6">
+            <tr>
+                <th>Subject</th>
+                <th>Topic</th>
+                <th>Date</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.subject }}</td>
+                <td>{{ schedule.topic }}</td>
+                <td>{{ schedule.date }}</td>
+                <td>{{ schedule.start_time }}</td>
+                <td>{{ schedule.end_time }}</td>
+                <td>{{ schedule.get_status_display }}</td>
+                <td>
+                    <a href="{% url 'schedule_update' schedule.pk %}">Edit</a>
+                    |
+                    <form method="post" action="{% url 'schedule_toggle_status' schedule.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">
+                            {% if schedule.status == 'pending' %}Mark Complete{% else %}Mark Pending{% endif %}
+                        </button>
+                    </form>
+                    |
+                    <a href="{% url 'schedule_delete' schedule.pk %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>You have no study sessions yet. Click "Add Study Session" to create one.</p>
+    {% endif %}
+
+</body>
+</html>
